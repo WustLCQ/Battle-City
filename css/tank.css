@@ -1,0 +1,36 @@
+body{
+    background: #333;
+    color: #F96;
+    font-family: "microsoft yahei";
+}
+#control{
+    width: 437px;
+    margin: 0 auto;
+}
+#control table{
+    border: solid #F96;
+    border-width: 1px 0px 0px 1px;
+
+}
+#control td,th{
+    border: solid #F96;
+    border-width: 0px 1px 1px 0px;
+    padding: 10px;
+    text-align: center;
+    font-weight: 400;
+}
+#control h1{
+    text-align: center;
+    font-size: 18px; 
+    font-weight: 400; 
+}
+#game{
+    width: 510px;
+    height: 437px;
+    margin: 50px auto 0;
+    background: #000;
+    overflow: hidden;
+}
+#main{
+    margin-top: 437px;
+}

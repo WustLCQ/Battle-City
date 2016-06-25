@@ -1,2 +1,2 @@
 # Battle-City
-## A html5 game
+A html5 game
