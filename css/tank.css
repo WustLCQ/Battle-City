@@ -30,7 +30,16 @@ body{
     margin: 50px auto 0;
     background: #000;
     overflow: hidden;
+    position: relative;
 }
 #main{
     margin-top: 437px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#grass{
+    position: absolute;
+    top: 0;
+    left: 0;
 }
