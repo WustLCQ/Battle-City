@@ -76,6 +76,10 @@ images["shield"] = [160,96];
 images["stageStart"] = [396,96];
 images["gameOver"] = [384,64];
 
+/*start画布的convas和context*/
+var canvas;
+var context;
+
 /*游戏主界面与边框之间的偏移量*/
 var offsetX = 32;
 var offsetY = 16;
@@ -94,3 +98,14 @@ var UP = 0;
 var DOWN = 32;
 var LEFT = 66;
 var RIGHT = 98;
+
+/*开始界面供选择的坦克*/
+var select;
+
+/*玩家坦克*/
+var player1;
+var player2;
+
+/*敌方坦克*/
+var enemy = Array(4);
+var currentEnemy;
