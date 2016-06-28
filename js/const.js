@@ -103,8 +103,7 @@ var RIGHT = 98;
 var select;
 
 /*玩家坦克*/
-var player1;
-var player2;
+var player = new Array(2);
 
 /*敌方坦克*/
 var enemy = Array(4);

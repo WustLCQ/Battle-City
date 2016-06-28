@@ -5,22 +5,52 @@ function Tank(x,y,width,height,direct,speed){
     this.height = height;
     this.direct = direct;
     this.speed = speed;
+    this.futureX = x;
+    this.futureY = y;
 }
-/*碰撞检测，当坐标值较小者加上自己宽度高度大于坐标值较大者时，视为碰撞*/
+/*未来位置，用于进行碰撞检测*/
+Tank.prototype.futurePosition = function(){
+    switch(this.direct){
+        case UP:
+        this.futureX = this.x;
+        this.futureY = this.y - this.speed;
+        break;
+        case RIGHT:
+        this.futureY = this.y;
+        this.futureX = this.x + this.speed;
+        break;
+        case DOWN:
+        this.futureX = this.x;
+        this.futureY = this.y + this.speed;
+        break;
+        case LEFT:
+        this.futureY = this.y;
+        this.futureX = this.x - this.speed;
+        break;
+        default:
+        break;
+    }
+}
+/*碰撞检测，当坐标值较小者加上自己宽度高度大于坐标值较大者时，视为碰撞，且返回false*/
 Tank.prototype.hitTestofObject = function(obj){
-    var minX = this.x > obj.x ? this.x : obj.x;
-    var maxX = this.x < obj.x ? this.x+this.width : obj.x+obj.width;
-    var minY = this.y > obj.y ? this.y : obj.y;
-    var maxY = this.y < obj.y ? this.y+this.height : obj.y+obj.height;
-
-    if (minX <= maxX && minY <= maxY) {
+    if(typeof(obj) == "undefined"){
         return true;
     }
-    else {
+    this.futurePosition();
+    obj.futurePosition();
+    var minX = this.futureX > obj.futureX ? this.futureX : obj.futureX;
+    var maxX = this.futureX < obj.futureX ? this.futureX+this.width : obj.futureX+obj.width;
+    var minY = this.futureY > obj.futureY ? this.futureY : obj.futureY;
+    var maxY = this.futureY < obj.futureY ? this.futureY+this.height : obj.futureY+obj.height;
+
+    if (minX <= maxX && minY <= maxY) {
         return false;
     }
+    else {
+        return true;
+    }
 }
-/*是否碰到地图的障碍物*/
+/*是否碰到地图的障碍物，返回false表示碰撞*/
 Tank.prototype.hitTestofMap = function(){
     /*minX、minY、maxX、maxY分别表示四个顶点*/
     var minUpX = Math.floor(this.x/16);
@@ -40,6 +70,9 @@ Tank.prototype.hitTestofMap = function(){
     var minLeftY = Math.floor(this.y/16);
     var maxLeftY = Math.floor((this.y+this.height)/16);
 
+    if(map[minLeftY][minUpX]==1 || map[minLeftY][minUpX]==2 || map[minLeftY][minUpX]==4 || map[minLeftY][maxUpX]==1 || map[minLeftY][maxUpX]==2 || map[minLeftY][maxUpX]==4 || map[maxLeftY][minUpX]==1 || map[maxLeftY][minUpX]==2 || map[maxLeftY][minUpX]==4 || map[maxLeftY][maxUpX]==1 || map[maxLeftY][maxUpX]==2 || map[maxLeftY][maxUpX]==4){
+        return false;
+    }
     switch(this.direct){
         case UP:
         if(this.y-this.speed < 0){
