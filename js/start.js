@@ -62,6 +62,9 @@ $(document).keydown(function(event){
             case K_LEFT:
             player[0].move(LEFT);
             break;
+            case K_SPACE:
+            player[0].shoot();
+            break;
             case K_W:
             if(select.getSelection() == 2){
                 player[1].move(UP);

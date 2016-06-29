@@ -2,6 +2,7 @@
 function Player(x,y,width,height,direct,speed,index){
     Tank.call(this,x,y,width,height,direct,speed);
     this.index = index;
+    this.bullet = null;
 }
 Player.prototype = new Tank();
 Player.prototype.init = function(){
@@ -62,4 +63,22 @@ Player.prototype.move = function(direct){
         context.drawImage(allImg,images[this.index][0]+this.direct,images[this.index][1],this.width,this.height,this.x+offsetX,this.y+offsetY,this.width,this.height);
         break;
     }
+}
+Player.prototype.shoot = function(){
+    switch(this.direct){
+        case UP:
+        this.bullet = new Bullet(this.x+this.width/2,this.y,6,8,this.direct,1);
+        break;
+        case RIGHT:
+        this.bullet = new Bullet(this.x+this.width,this.y+this.width/2,8,6,this.direct,1);
+        break;
+        case DOWN:
+        this.bullet = new Bullet(this.x+this.width/2,this.y+this.height,6,8,this.direct,1);
+        break;
+        case LEFT:
+        this.bullet = new Bullet(this.x,this.y+this.width/2,8,6,this.direct,1);
+        break;
+    }
+    this.bullet.init();
+    var bulletTimer = 
 }

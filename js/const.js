@@ -99,6 +99,12 @@ var DOWN = 32;
 var LEFT = 66;
 var RIGHT = 98;
 
+/*子弹朝向*/
+var B_UP = 0;
+var B_DOWN = 6;
+var B_LEFT = 11;
+var B_RIGHT = 18;
+
 /*开始界面供选择的坦克*/
 var select;
 
