@@ -31,16 +31,15 @@ $(document).keydown(function(event){
                 player[1] = new Player(242,384,26,30,UP,4,"player2");
                 player[1].init();
             }
-            enemy[0] = new Enemy(0,0,26,30,DOWN,4,1);
+            enemy[0] = new Enemy(0,0,26,30,DOWN,1,1);
             enemy[0].init();
             enemy[0].move();
             currentEnemy++;
             var enemyTimer = setInterval(function(){
                 for (var i = enemy.length - 1; i >= 0; i--) {
                     if(currentEnemy < 4 && (typeof(enemy[i]) == "undefined" || typeof(enemy[i]) == null)){
-                        enemy[i] = new Enemy(0,0,26,30,DOWN,4,1);
+                        enemy[i] = new Enemy(0,0,26,30,DOWN,1,1);
                         enemy[i].init();
-                        enemy[i].move();
                         currentEnemy++;
                         break;
                     }

@@ -2,6 +2,7 @@
 function Enemy(x,y,width,height,direct,speed,life){
     Tank.call(this,x,y,width,height,direct,speed);
     this.life = life;
+    this.bullet = null;
 }
 Enemy.prototype = new Tank();
 Enemy.prototype.init = function(){
@@ -9,6 +10,13 @@ Enemy.prototype.init = function(){
         this.x = Math.floor(Math.random()*24)*16;
     }while(!this.hitTestofMap());
     context.drawImage(allImg,images["tank"+this.life][0]+this.direct,images["tank"+this.life][1],this.width,this.height,this.x+offsetX,this.y+offsetY,this.width,this.height);
+    this.move();
+    var that = this;
+    var shootTimer = setInterval(function(){
+        if(that.bullet == null){
+            that.shoot();
+        }
+    },1000);
 }
 Enemy.prototype.move = function(){
     var that = this;   
@@ -101,4 +109,28 @@ Enemy.prototype.moveStraight = function(){
         break;
     }
     return true;
+}
+Enemy.prototype.shoot = function(){
+    switch(this.direct){
+        case UP:
+        this.bullet = new Bullet(this.x+this.width/2,this.y,6,8,this.direct,1);
+        break;
+        case RIGHT:
+        this.bullet = new Bullet(this.x+this.width,this.y+this.width/2,8,6,this.direct,1);
+        break;
+        case DOWN:
+        this.bullet = new Bullet(this.x+this.width/2,this.y+this.height,6,8,this.direct,1);
+        break;
+        case LEFT:
+        this.bullet = new Bullet(this.x,this.y+this.width/2,8,6,this.direct,1);
+        break;
+    }
+    var that = this;
+    that.bullet.init(); 
+    var bulletTimer = setInterval(function(){
+        if(!that.bullet.fly()){
+            that.bullet = null;
+            clearInterval(bulletTimer);
+        }   
+    },20);   
 }

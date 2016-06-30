@@ -79,6 +79,13 @@ Player.prototype.shoot = function(){
         this.bullet = new Bullet(this.x,this.y+this.width/2,8,6,this.direct,1);
         break;
     }
-    this.bullet.init();
-    var bulletTimer = 
+    var bullet = this.bullet;
+    bullet.init(); 
+    var bulletTimer = setInterval(function(){
+        if(!bullet.fly()){
+            bullet = null;
+            clearInterval(bulletTimer);
+        }   
+    },20); 
+    
 }
