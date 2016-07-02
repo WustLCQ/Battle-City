@@ -10,8 +10,8 @@ function selectMap(level){
     }
 }
 function drawMap(){
-    var canvasGrass = document.getElementById("grass");
-    var contextGrass = canvasGrass.getContext("2d");
+    var canvasUpon = document.getElementById("upon");
+    var contextUpon = canvasUpon.getContext("2d");
 
     context.clearRect(0,0,510,437);
 
@@ -39,11 +39,11 @@ function drawMap(){
             }
             else if(map[i][j]==3)   //草
             {
-                contextGrass.drawImage(allImg,32 + mapX, mapY,16,16,j*16 + offsetX, i*16 + offsetY,16,16) ;
+                contextUpon.drawImage(allImg,32 + mapX, mapY,16,16,j*16 + offsetX, i*16 + offsetY,16,16) ;
             }
             else if(map[i][j]==4)   //水
             {
-                context.drawImage(allImg,48 + mapX, mapY,16,16,j*16 + offsetX, i*16 + offsetY,16,16) ;
+                contextUpon.drawImage(allImg,48 + mapX, mapY,16,16,j*16 + offsetX, i*16 + offsetY,16,16) ;
             }
             else if(map[i][j]==5)   //冰
             {
