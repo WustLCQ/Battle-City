@@ -1,174 +1,340 @@
-function Bullet(x,y,width,height,direct,speed){
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.direct = direct;
-    this.speed = speed;
+function Bullet(x,y,type,dir,name)
+{
+	Sprite.call(this, x, y, "bullet", 6);
+	
+	this.type = type;
+	this.speed = 6;
+	this.dir = dir;
+	this.name = name;
+	
+	initXY.call(this);
 }
-Bullet.prototype.init = function(){
-    switch(this.direct){
-        case UP:
-        this.direct = B_UP;
-        break;
-        case RIGHT:
-        this.direct = B_RIGHT;
-        break;
-        case DOWN:
-        this.direct = B_DOWN;
-        break;
-        case LEFT:
-        this.direct = B_LEFT;
-        break;
-        default:
-        break;
-    }
-    context.drawImage(allImg,images["bullet"][0]+this.direct,images["bullet"][1],this.width,this.height,this.x+offsetX,this.y+offsetY,this.width,this.height);
-}
-/*碰撞检测，当坐标值较小者加上自己宽度高度大于坐标值较大者时，视为碰撞，且返回false*/
-Bullet.prototype.hitTestofObject = function(obj){
-    if(typeof(obj) == "undefined"){
-        return true;
-    }
-    this.futurePosition();
-    obj.futurePosition();
-    var minX = this.futureX > obj.futureX ? this.futureX : obj.futureX;
-    var maxX = this.futureX < obj.futureX ? this.futureX+this.width : obj.futureX+obj.width;
-    var minY = this.futureY > obj.futureY ? this.futureY : obj.futureY;
-    var maxY = this.futureY < obj.futureY ? this.futureY+this.height : obj.futureY+obj.height;
 
-    if (minX <= maxX && minY <= maxY) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-/*是否碰到地图的障碍物，返回0表示没碰撞，返回1表示碰到了红墙，返回2表示碰到了铁砖，如果是红墙，就将其擦除*/
-Bullet.prototype.hitTestofMap = function(){
-    /*minX、minY、maxX、maxY分别表示四个顶点*/
-    var minUpX = Math.floor(this.x/16);
-    var maxUpX = Math.floor((this.x+this.width)/16);
-    var minUpY = Math.floor((this.y-this.speed)/16);
-    var maxUpY = Math.floor((this.y-this.speed+this.height)/16);
-    var minRightX = Math.floor((this.x+this.speed)/16);
-    var maxRightX = Math.floor((this.x+this.speed+this.width)/16);
-    var minRightY = Math.floor(this.y/16);
-    var maxRightY = Math.floor((this.y+this.height)/16);
-    var minDownX = Math.floor(this.x/16);
-    var maxDownX = Math.floor((this.x+this.width)/16);
-    var minDownY = Math.floor((this.y+this.speed)/16);
-    var maxDownY = Math.floor((this.y+this.speed+this.height)/16);
-    var minLeftX = Math.floor((this.x-this.speed)/16);
-    var maxLeftX = Math.floor((this.x-this.speed+this.width)/16);
-    var minLeftY = Math.floor(this.y/16);
-    var maxLeftY = Math.floor((this.y+this.height)/16);
+Bullet.prototype = new Sprite();
 
-    if(map[minLeftY][minUpX]==1 || map[minLeftY][maxUpX]==1 || map[maxLeftY][minUpX]==1 || map[maxLeftY][maxUpX]==1){
-        context.clearRect(minUpX*16+offsetX,minLeftY*16+offsetY,16,16);
-        context.clearRect(maxUpX*16+offsetX,minLeftY*16+offsetY,16,16);
-        context.clearRect(minUpX*16+offsetX,maxLeftY*16+offsetY,16,16);
-        context.clearRect(maxUpX*16+offsetX,maxLeftY*16+offsetY,16,16);
-        map[minLeftY][minUpX]=0;
-        map[minLeftY][maxUpX]=0;
-        map[maxLeftY][minUpX]=0;
-        map[maxLeftY][maxUpX]=0;     
-        return 1;
-    }else if(map[minLeftY][minUpX]==2 || map[minLeftY][maxUpX]==2 || map[maxLeftY][minUpX]==2 || map[maxLeftY][maxUpX]==2){
-        return 2;
-    }
-    switch(this.direct){
-        case B_UP:
-        if(this.y-this.speed < 0){
-            /*边界，视为碰撞到铁砖*/
-            return 2;
-        }if(map[minUpY][minUpX]==1 || map[minUpY][maxUpX]==1){
-            context.clearRect(minUpX*16+offsetX,minUpY*16+offsetY,16,16);
-            context.clearRect(maxUpX*16+offsetX,minUpY*16+offsetY,16,16);
-            map[minUpY][minUpX]=0;
-            map[minUpY][maxUpX]=0;
-            return 1;
-        }else if(map[minUpY][minUpX]==2 || map[minUpY][maxUpX]==1){
-            return 2;
-        }else{
-            return 0;
-        }
-        break;
-        case B_RIGHT:
-        if(this.x+this.speed+this.width > 416){
-            /*边界，视为碰撞到铁砖*/
-            return 2;
-        }else if(map[minRightY][maxRightX]==1 || map[maxRightY][maxRightX]==1){
-            context.clearRect(maxRightX*16+offsetX,minRightY*16+offsetY,16,16);
-            context.clearRect(maxRightX*16+offsetX,maxRightY*16+offsetY,16,16);
-            map[minRightY][maxRightX]=0;
-            map[maxRightY][maxRightX]=0;
-            return 1;
-        }else if(map[minRightY][maxRightX]==2 || map[maxRightY][maxRightX]==2){
-            return 2;
-        }else{
-            return 0;
-        }
-        break;
-        case B_DOWN:
-        if(this.y+this.speed+this.height > 416){
-            /*边界，视为碰撞到铁砖*/
-            return 2;
-        }else if(map[maxDownY][minDownX]==1 || map[maxDownY][maxDownX]==1){
-            context.clearRect(minDownX*16+offsetX,maxDownY*16+offsetY,16,16);
-            context.clearRect(maxDownX*16+offsetX,maxDownY*16+offsetY,16,16);
-            map[maxDownY][minDownX]=0;
-            map[maxDownY][maxDownX]=0;
-            return 1;
-        }else if(map[maxDownY][minDownX]==2 || map[maxDownY][maxDownX]==2){
-            return 2;
-        }else{
-            return 0;
-        }
-        break;
-        case B_LEFT:
-        if(this.x-this.speed < 0){
-            /*边界，视为碰撞到铁砖*/
-            return 2;
-        }else if(map[minLeftY][minLeftX]==1 || map[maxLeftY][minLeftX]==1){
-            context.clearRect(minLeftX*16+offsetX,minLeftY*16+offsetY,16,16);
-            context.clearRect(minLeftX*16+offsetX,maxLeftY*16+offsetY,16,16);
-            map[minLeftY][minLeftX]=0;
-            map[maxLeftY][minLeftX]=0;
-            return 1;
-        }else if(map[minLeftY][minLeftX]==2 || map[maxLeftY][minLeftX]==2){
-            return 2;
-        }else{
-            return 0;
-        }
-        break;
-        default:
-        break;
-    }
+function initXY()
+{
+		switch(this.dir)
+		{
+			case UP:
+					this.x += 13;
+					this.y -= 3;
+					break;
+				
+			case DOWN:
+					this.x += 13;
+					this.y += 32;
+					break;
+				
+			case RIGHT:
+					this.y += 13;
+					this.x += 32;
+					break;
+				
+			case LEFT:
+					this.y += 13;
+					this.x -= 3;
+					break;
+				
+		}
 }
-/*子弹飞行函数，返回false表示发生碰撞，子弹应销毁，返回true表示继续飞行*/
-Bullet.prototype.fly = function(){
-    if(this.hitTestofMap() != 0){
-        context.clearRect(this.x+offsetX,this.y+offsetY,this.width,this.height);
-        return false;
-    }
-    switch(this.direct){
-        case B_UP:
-        this.y -= this.speed;
-        break;
-        case B_RIGHT:
-        this.x += this.speed;
-        break;
-        case B_DOWN:
-        this.y += this.speed;
-        break;
-        case B_LEFT:
-        this.x -= this.speed;
-        break;
-        default:
-        break;
-    }
-    context.clearRect(this.x+offsetX,this.y+offsetY,this.width,this.height);
-    context.drawImage(allImg,images["bullet"][0]+this.direct,images["bullet"][1],this.width,this.height,this.x+offsetX,this.y+offsetY,this.width,this.height);
-    return true;
+
+Bullet.prototype.draw = function(canvas)
+{
+	var myCanvas = document.getElementById(canvas);
+	var graphics = myCanvas.getContext("2d");
+	var img = document.getElementById("tankAll");
+	
+	graphics.drawImage(img, 6 * this.dir + images[this.src][0], images[this.src][1], 6, 6, this.x + offerX, this.y + offerY, 6, 6) ;	
+};
+
+Bullet.prototype.move = function()
+{
+	switch(this.dir)
+	{
+		case UP:
+			this.y -= this.speed;
+			break;
+		case DOWN:
+			this.y += this.speed;
+			break;
+		case LEFT:
+			this.x -= this.speed;
+			break;
+		case RIGHT:
+			this.x += this.speed;
+			break;
+			
+		
+	}
+};
+
+Bullet.prototype.checkHit = function()
+{
+	var xx = [ parseInt((this.x - 4)/ 16), parseInt((this.x + 3) / 16), parseInt((this.x + 10) / 16)];
+	var yy = [ parseInt((this.y - 4) / 16), parseInt((this.y + 3) / 16), parseInt((this.y + 10) / 16)];
+	
+	if(xx[2] > 25) {xx[2] = 25;}
+	if(yy[2] > 25) {yy[2] = 25;}
+	if(xx[1] > 25) {xx[1] = 25;}
+	if(yy[1] > 25) {yy[1] = 25;}
+	if(xx[0] < 0)  {xx[0] = 0;}
+	if(xx[0] < 0)  {yy[0] = 0;}
+	
+	var dir = this.dir;
+	var isHit = false;
+
+	if(this.x < 0 || this.y < 0 || this.x > 416 || this.y > 416)
+	{
+		if(this.type == 0)
+		{
+			sound.play("shootOver");
+		}
+		return true;
+	}
+	else 
+	{
+		var i,j;
+		for(var k = 0 ; k < 2 ; k ++)
+		{
+			if(dir == UP || dir == DOWN)
+			{
+				j = 1;
+				i = k;
+			}
+			else
+			{
+				i = 1;
+				j = k;
+			}
+			var yj = yy[j];
+			var xi = xx[i];
+			
+			var wallType = map[yj][xi];
+			
+			if(wallType == WALL || wallType == GRID || wallType > 5) 
+			{
+				isHit = true;
+				
+				
+				if(wallType == WALL) 
+				{ 
+					switch(dir)
+					{
+						case UP :map[yj][xi] = 10;
+							     break;
+						case DOWN :map[yj][xi] = 11;
+								   break;
+						case LEFT :map[yj][xi] = 12;
+								   break;
+						case RIGHT :map[yj][xi] = 13;
+									break;
+					}
+					
+					clearWall(xi,yj,map[yj][xi]);
+				}
+				
+				else if(wallType == GRID && this.type == 0)
+				{
+					sound.play("shootOver");
+				}
+				
+				if (wallType == HOME ||  wallType == 8)
+				{
+					gameState = STATE_GAMEOVER;
+					var bombFx = new BombFx(this.x, this.y, 0);
+					bombFxs.push(bombFx);
+					sound.play("bomb0");
+					return true;
+				}
+				
+				else if(wallType > 9)
+				{
+					map[yj][xi] = NON;
+					
+					var myCanvas = document.getElementById("wall");
+					var graphics = myCanvas.getContext("2d");
+					graphics.fillRect(xi * 16 + offerX,yj * 16 + offerY,16,16);
+					
+					switch(wallType)
+					{
+						case 10 :this.y -= 4;
+							     break;
+						case 11 :this.y += 4;
+								 break;
+						case 12 :this.x -= 4;
+								 break;
+						case 13 :this.x += 4;
+								 break;
+					}
+				}
+			}
+		}	
+		return isHit;
+	}
+};
+
+function clearWall(xx,yy,type)
+{
+	var myCanvas = document.getElementById("wall");
+	var graphics = myCanvas.getContext("2d");
+	
+	var x = xx * 16;
+	var y = yy * 16;
+	graphics.fillStyle = "000"
+	switch(type)
+	{
+		case 10 :graphics.fillRect(x + offerX,y + offerY + 8,16,8);
+				 break;
+		case 11 :graphics.fillRect(x + offerX,y + offerY,16,8);
+				 break;
+		case 12 :graphics.fillRect(x + offerX + 8,y + offerY,8,16);
+				 break;
+		case 13 :graphics.fillRect(x + offerX,y + offerY,8,16);
+				 break;
+	}
 }
+
+Bullet.prototype.hitTanks = function()
+{
+	for(var i = 0;i < tanks.length;i ++ )
+	{
+		var xx = tanks[i].x;
+		var yy = tanks[i].y;
+		var isBomb = false;
+
+		if(this.hitTestObject(tanks[i]) && tanks[i].type != this.type)
+		{
+			var tankScore;
+			
+			if(this.type == 0)                                        //�ӵ����Լ������
+			{
+				tanks[i].life --;
+				
+				if(tanks[i].life == 0)
+				{
+					tankScore = tanks[i].score;
+					
+					tanks.splice(i,1);
+					i --;
+					isBomb = true;
+					sound.play("bomb1");
+				}	
+			}
+			
+			else if(!tanks[i].isGod)
+			{
+				tanks[i].live --;
+				scoreBoard.drawPlayerLife(tanks[i].name,tanks[i].live);
+				sound.play("bomb0");
+				if(tanks[i].live == 0)
+				{
+					tanks.splice(i,1);
+					playerNum --;
+					
+					
+					
+					if(playerNum == 0) 
+					{
+						var bombFx = new BombFx(xx, yy, 0);
+						bombFxs.push(bombFx);
+						
+						gameState = STATE_GAMEOVER;
+						return;
+					}
+					
+					continue;
+				}
+				
+				initMyTank(tanks[i].name);
+				tankScore = 0;
+				isBomb = true;
+			}
+			
+			
+			if(isBomb)
+			{
+				var bombFx = new BombFx(xx, yy, tankScore);
+				bombFxs.push(bombFx);
+			}	
+			
+			if(tankNum >= 20 && tanks.length == playerNum) nextStage();
+			return true;
+		}
+	}
+	return false;
+};
+
+
+
+function updataBullets()
+{
+	for(var i = 0;i < bullets.length;i++)
+	{
+		bullets[i].move();
+		
+		if(bullets[i].type == 0)
+		{
+			for(var j = 0;j < bullets.length;j++)
+			{
+					if(i == j) {continue;}
+					else if(bullets[i].hitTestObject(bullets[j]) && bullets[i].type == 0)
+					{	
+						var hitFx = new HitFx(bullets[i].x + 3,bullets[i].y + 3);
+						hitFx.type = 1;
+						hitFxs.push(hitFx);
+						
+						if(bullets[i].name == 1) {player1.time = player1.shotSpeed - 14;}
+						else {player2.time = player2.shotSpeed - 14;}
+						
+						bullets.splice(i > j ? i : j, 1);
+						bullets.splice(i < j ? i : j, 1);
+						
+						if(i < j) {i --;}
+						else {i -= 2;}
+						
+						j = 1000;//�˳�ѭ��
+					}
+			}
+		}
+	
+		var isHit = false;
+		
+		if(i < 0) {return;}
+		if(i >= bullets.length) {return;}
+		
+		if(bullets[i].checkHit()) 
+		{
+			isHit = true;//����ǽ��
+		}
+		
+		if(bullets[i].hitTanks())  
+		{
+			isHit = true;
+		}//����̹��
+	
+
+		if(isHit && bullets[i]) 
+		{
+			if(bullets[i].type == 0) 
+			{
+				if(bullets[i].name == 1) {player1.time = player1.shotSpeed - 14;}
+				else {player2.time = player2.shotSpeed - 14;}
+			}
+			var hitFx = new HitFx(bullets[i].x + 3,bullets[i].y + 3);
+			bullets.splice(i,1);
+			i --;
+			hitFxs.push(hitFx);
+		}
+	}
+}
+
+function drawBullets()
+{
+	for(var i = 0; i < bullets.length ; i ++)
+	{
+		bullets[i].draw("main");
+	}
+}
+
+

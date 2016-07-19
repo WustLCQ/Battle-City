@@ -1,56 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>坦克大战</title>
-    <link href="css/tank.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="battle city" content="tank,html5,canvas">
+	<meta name="a game" content="battle city">
+	<title>Tank html5</title>
+	<script type="text/javascript" src = "js/Const.js"></script>
+	<script type="text/javascript" src = "js/Sound.js"></script>
+
+
+	<script type="text/javascript" src = "js/Map.js"></script>
+	<script type="text/javascript" src = "js/MapLevel.js"></script>
+	<script type="text/javascript" src = "js/StageStart.js"></script>
+	<script type="text/javascript" src = "js/Sprite.js"></script>
+	<script type="text/javascript" src = "js/Score.js"></script>
+	<script type="text/javascript" src = "js/TankStart.js"></script>
+	<script type="text/javascript" src = "js/Tank.js"></script>
+	<script type="text/javascript" src = "js/MyTank.js"></script>
+	<script type="text/javascript" src = "js/Bullet.js"></script>
+	<script type="text/javascript" src = "js/HitFx.js"></script>
+	<script type="text/javascript" src = "js/BombFx.js"></script>
+	<script type="text/javascript" src = "js/Food.js"></script>
+	<script type="text/javascript" src = "js/ScoreBoard.js"></script>
+	<script type="text/javascript" src = "js/Score.js"></script>
+	<script type="text/javascript" src = "js/Num.js"></script>
+	<script type="text/javascript" src = "js/Main.js"></script>
+
+	<audio id="attack" src="sounds/attack.mp3"></audio>
+	<audio id="bomb0" src="sounds/bomb0.mp3"></audio>
+	<audio id="bomb1" src="sounds/bomb1.mp3"></audio>
+	<audio id="food" src="sounds/food.mp3"></audio>
+	<audio id="stageStart" src="sounds/stageStart.mp3"></audio>
+	<audio id="shootOver" src="sounds/shootOver.mp3"></audio>
+	<audio id="move" src="sounds/move.mp3"></audio>
+	<audio id="move1" src="sounds/move.mp3"></audio>
+
+	<script type="text/javascript">window.onload = function(){main()}</script>
+
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="all"/>
 </head>
-<body>
-    <div id="control">
-        <h1>操作说明如下：</h1>
-        <table>
-            <tr>
-                <th>控制键</th>
-                <th>上</th>
-                <th>下</th>
-                <th>左</th>
-                <th>右</th>
-                <th>攻击</th>
-                <th>下一关</th>
-            </tr>
-            <tr>
-                <td>玩家1</td>
-                <td>上键</td>
-                <td>下键</td>
-                <td>左键</td>
-                <td>右键</td>
-                <td>空格键</td>
-                <td>N键</td>
-            </tr>
-            <tr>
-                <td>玩家2</td>
-                <td>W键</td>
-                <td>S键</td>
-                <td>A键</td>
-                <td>D键</td>
-                <td>J键</td>
-                <td>N键</td>
-            </tr>
-        </table>
-    </div>
-    <div id="game">
-        <canvas id="main" width="510px" height="437px">您的浏览器不支持HTML5，请升级浏览器！</canvas>
-        <canvas id="upon" width="510px" height="437px">您的浏览器不支持HTML5，请升级浏览器！</canvas>
-    </div>  
-    <script type="text/javascript" src = "js/jquery.min.js"></script>  
-    <script type="text/javascript" src = "js/const.js"></script>
-    <script type="text/javascript" src = "js/mapLevel.js"></script>
-    <script type="text/javascript" src = "js/tank.js"></script>
-    <script type="text/javascript" src = "js/select.js"></script>
-    <script type="text/javascript" src = "js/bullet.js"></script>
-    <script type="text/javascript" src = "js/player.js"></script>
-    <script type="text/javascript" src = "js/enemy.js"></script>
-    <script type="text/javascript" src = "js/start.js"></script>
-    <script type="text/javascript" src = "js/map.js"></script>
+<body >
+	<div id = "srcImg">
+		<img src="images/tankAll.gif" id = "tankAll"/>
+	</div>
+	<div id = "control">
+		<table border = 1 cellpadding = 10>
+			<h1>操作说明如下：</h1>
+			<tr>
+				<th>控制键</th>
+				<th>上</th>
+				<th>下</th>
+				<th>左</th>
+				<th>右</th>
+				<th>攻击</th>
+				<th>下一关</th>
+			</tr>
+			<tr>
+				<td>玩家1</td>
+				<td>上键</td>
+				<td>下键</td>
+				<td>左键</td>
+				<td>右键</td>
+				<td>空格键</td>
+				<td>N键</td>
+			</tr>
+			<tr>
+				<td>玩家2</td>
+				<td>W键</td>
+				<td>S键</td>
+				<td>A键</td>
+				<td>D键</td>
+				<td>J键</td>
+				<td>N键</td>
+			</tr>
+		</table>
+	</div>
+	<div id="game">
+		<canvas id="wall" width="512" height="448"></canvas>
+		<canvas id="main" width="512" height="448"></canvas>
+		<canvas id="grass" width="512" height="448"></canvas>
+		<canvas id="upp" width="512" height="448"></canvas>
+		<canvas id="stage" width="512" height="448"></canvas>
+	</div>
 </body>
 </html>

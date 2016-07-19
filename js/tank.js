@@ -1,132 +1,415 @@
-function Tank(x,y,width,height,direct,speed){
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.direct = direct;
-    this.speed = speed;
-    this.futureX = x;
-    this.futureY = y;
+function Tank(x, y, src, speed , type)
+{
+	Sprite.call(this, x, y, src, 30);
+	
+	this.dir = DOWN;
+	this.preDir = DOWN;
+	this.speed = speed;
+	this.type = type;
+	this.isShot = false;
+	this.time = 0;
+	this.shotSpeed = 70;
+	this.life = 1;
 }
-/*未来位置，用于进行碰撞检测*/
-Tank.prototype.futurePosition = function(){
-    switch(this.direct){
-        case UP:
-        this.futureX = this.x;
-        this.futureY = this.y - this.speed;
-        break;
-        case RIGHT:
-        this.futureY = this.y;
-        this.futureX = this.x + this.speed;
-        break;
-        case DOWN:
-        this.futureX = this.x;
-        this.futureY = this.y + this.speed;
-        break;
-        case LEFT:
-        this.futureY = this.y;
-        this.futureX = this.x - this.speed;
-        break;
-        default:
-        break;
-    }
-}
-/*碰撞检测，当坐标值较小者加上自己宽度高度大于坐标值较大者时，视为碰撞，且返回false*/
-Tank.prototype.hitTestofObject = function(obj){
-    if(typeof(obj) == "undefined"){
-        return true;
-    }
-    this.futurePosition();
-    obj.futurePosition();
-    var minX = this.futureX > obj.futureX ? this.futureX : obj.futureX;
-    var maxX = this.futureX < obj.futureX ? this.futureX+this.width : obj.futureX+obj.width;
-    var minY = this.futureY > obj.futureY ? this.futureY : obj.futureY;
-    var maxY = this.futureY < obj.futureY ? this.futureY+this.height : obj.futureY+obj.height;
 
-    if (minX <= maxX && minY <= maxY) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-/*是否碰到地图的障碍物，返回false表示碰撞*/
-Tank.prototype.hitTestofMap = function(){
-    /*minX、minY、maxX、maxY分别表示四个顶点*/
-    var minUpX = Math.floor(this.x/16);
-    var maxUpX = Math.floor((this.x+this.width)/16);
-    var minUpY = Math.floor((this.y-this.speed)/16);
-    var maxUpY = Math.floor((this.y-this.speed+this.height)/16);
-    var minRightX = Math.floor((this.x+this.speed)/16);
-    var maxRightX = Math.floor((this.x+this.speed+this.width)/16);
-    var minRightY = Math.floor(this.y/16);
-    var maxRightY = Math.floor((this.y+this.height)/16);
-    var minDownX = Math.floor(this.x/16);
-    var maxDownX = Math.floor((this.x+this.width)/16);
-    var minDownY = Math.floor((this.y+this.speed)/16);
-    var maxDownY = Math.floor((this.y+this.speed+this.height)/16);
-    var minLeftX = Math.floor((this.x-this.speed)/16);
-    var maxLeftX = Math.floor((this.x-this.speed+this.width)/16);
-    var minLeftY = Math.floor(this.y/16);
-    var maxLeftY = Math.floor((this.y+this.height)/16);
+Tank.prototype = new Sprite();
 
-    if(map[minLeftY][minUpX]==1 || map[minLeftY][minUpX]==2 || map[minLeftY][minUpX]==4 || map[minLeftY][maxUpX]==1 || map[minLeftY][maxUpX]==2 || map[minLeftY][maxUpX]==4 || map[maxLeftY][minUpX]==1 || map[maxLeftY][minUpX]==2 || map[maxLeftY][minUpX]==4 || map[maxLeftY][maxUpX]==1 || map[maxLeftY][maxUpX]==2 || map[maxLeftY][maxUpX]==4){
-        return false;
-    }
-    switch(this.direct){
-        case UP:
-        if(this.y-this.speed < 0){
-            return false;
-        }else if(map[minUpY][minUpX]==5 || map[minUpY][maxUpX]==5){
-            //在冰上，加速
-            this.y -= 16;
-            return true;
-        }else if(map[minUpY][minUpX]!=1 && map[minUpY][minUpX]!=2 && map[minUpY][minUpX]!=4 && map[minUpY][maxUpX]!=1 && map[minUpY][maxUpX]!=2 && map[minUpY][maxUpX]!=4){
-            return true;
-        }else{
-            return false;
-        }
-        break;
-        case RIGHT:
-        if(this.x+this.speed+this.width > 416){
-            return false;
-        }else if(map[minRightY][maxRightX]==5 || map[maxRightY][maxRightX]==5){
-            //在冰上，加速
-            this.x += 16;
-            return true;
-        }else if(map[minRightY][maxRightX]!=1 && map[minRightY][maxRightX]!=2 && map[minRightY][maxRightX]!=4 && map[maxRightY][maxRightX]!=1 && map[maxRightY][maxRightX]!=2 && map[maxRightY][maxRightX]!=4){
-            return true;
-        }else{
-            return false;
-        }
-        break;
-        case DOWN:
-        if(this.y+this.speed+this.height > 416){
-            return false;
-        }else if(map[maxDownY][minDownX]==5 || map[maxDownY][maxDownX]==5){
-            //在冰上，加速
-            this.y -= 16;
-            return true;
-        }else if(map[maxDownY][minDownX]!=1 && map[maxDownY][minDownX]!=2 && map[maxDownY][minDownX]!=4 && map[maxDownY][maxDownX]!=1 && map[maxDownY][maxDownX]!=2 && map[maxDownY][maxDownX]!=4){
-            return true;
-        }else{
-            return false;
-        }
-        break;
-        case LEFT:
-        if(this.x-this.speed < 0){
-            return false;
-        }else if(map[minLeftY][minLeftX]==5 || map[maxLeftY][minLeftX]==5){
-            //在冰上，加速
-            this.x += 16;
-            return true;
-        }else if(map[minLeftY][minLeftX]!=1 && map[minLeftY][minLeftX]!=2 && map[minLeftY][minLeftX]!=4 && map[maxLeftY][minLeftX]!=1 && map[maxLeftY][minLeftX]!=2 && map[maxLeftY][minLeftX]!=4){
-            return true;
-        }else{
-            return false;
-        }
-        break;
-        default:
-        break;
-    }
+Tank.prototype.moveFree = function()
+{
+	this.shot();
+	
+	//if(Math.random() * 200 < 1) this.dir = parseInt(Math.random() * 4);
+	
+	if(!this.move(this.dir))//&& Math.random() * 4 < 1) 
+	{
+		
+		var i = parseInt(Math.random() * 4);
+		var dir = this.dir;
+		
+		if( dir == UP && i == DOWN && Math.random() * 4 <= 2)  {this.dir = UP;}
+		else if( dir == DOWN && i == UP && Math.random() * 4 <= 2 )  {this.dir = DOWN;}
+		else if( dir == LEFT && i == RIGHT && Math.random() * 4 <= 2 )  {this.dir = LEFT;}
+		else if( dir == RIGHT && i == LEFT && Math.random() * 4 <= 2 )  {this.dir = RIGHT;}
+		
+		else {this.dir = i;}
+	
+	}
+};
+
+Tank.prototype.draw = function(canvas)
+{
+	var myCanvas = document.getElementById(canvas);
+	var graphics = myCanvas.getContext("2d");
+	var img = document.getElementById("tankAll");
+	
+	var xx = images[this.src][0];
+	var yy = images[this.src][1];
+	
+	graphics.drawImage(img,32 * this.dir + xx, yy, 32, 32,this.x + offerX,this.y + offerY,32,32) ;	
+	
+	
+	return;
+};
+
+Tank.prototype.updata = function()
+{
+	if(this.isShot) 
+	{
+		this.time++;
+		if(this.time > this.shotSpeed)
+		{
+			this.time = 0;
+			this.isShot = false;
+		}
+	}
+};
+
+Tank.prototype.move = function(dir)
+{
+	switch(dir)
+	{
+		case UP :
+		{
+			if(this.moveUp()) 
+			{
+				this.y -= this.speed;return true;
+			} 
+			
+			break;
+		}
+		case DOWN:
+		{
+			if(this.moveDown()) 
+			{
+				this.y += this.speed;return true;
+			} 
+			break;
+		}
+		case LEFT:
+		{
+			if(this.moveLeft()) 
+			{
+				this.x -= this.speed;return true;
+			} 
+			break;
+		}
+		case RIGHT:
+		{
+			if(this.moveRight()) 
+			{
+				this.x += this.speed;return true;
+			} 
+			break;
+		}
+		
+		default:break;
+	}
+	return false;
+};
+
+function clearTank(x,y)
+{
+	var myCanvas = document.getElementById("main");
+	var graphics = myCanvas.getContext("2d");
+	var imgTank = document.getElementById("Tank");
+	
+	
+	graphics.clearRect(x + offerX,y + offerY,32,32);
 }
+
+Tank.prototype.setPosition = function()
+{
+
+	if ( (this.preDir < 2 && this.dir >1) || (this.preDir > 1 && this.dir <2)  ) 
+	{
+		var f;
+		switch(this.dir)
+		{
+			case UP:
+			case DOWN:
+				f = parseInt((this.x + 8) / 16);
+				f = f * 16;
+				this.x = f;	
+				break;
+			
+			case LEFT:
+			case RIGHT:
+				f = parseInt((this.y + 8) / 16);
+				f = f * 16;
+				this.y = f ;
+				break;
+		}
+	}
+	this.preDir = this.dir;
+	
+};
+
+Tank.prototype.moveUp = function()
+{
+	this.dir = UP;
+	this.setPosition();
+	var col = parseInt((this.y - this.speed)/16);
+	if(col < 0) 
+	{
+		col = 0;
+	}
+	var row1 = parseInt(this.x /16);
+	var row2 = parseInt( (this.x + this.width) /16);
+	var row3 = parseInt( (this.x +(this.width/2) )/16);
+	
+	if(this.y - this.speed > -1 && check(row1,col) && check(row2,col) && check(row3,col))
+	{
+		return !this.checkHit(tanks);
+	}
+	return false;
+	
+};
+
+Tank.prototype.moveDown = function()
+{
+	this.dir = DOWN;
+	this.setPosition();
+	
+	var col = parseInt((this.y + this.speed + this.width)/16);
+	var row1 = parseInt(this.x /16);
+	var row2 = parseInt( (this.x + this.width) /16);
+	var row3 = parseInt( (this.x +(this.width/2) )/16);
+	
+	if(this.y + this.speed + this.width < 416 && check(row1,col) && check(row2,col) && check(row3,col))
+	{
+		return !this.checkHit(tanks);
+	}
+	return false;
+	
+};
+
+Tank.prototype.moveLeft = function()
+{
+	this.dir = LEFT;
+	this.setPosition();
+	
+	var row = parseInt((this.x - this.speed)/16);
+	if(row < 0) 
+	{
+		row = 0;
+	}
+	var col1 = parseInt(this.y /16);
+	var col2 = parseInt( (this.y + this.width) /16);
+	var col3 = parseInt( (this.y +(this.width/2) )/16);
+	
+	
+	if(this.x - this.speed > -1 && check(row,col1) && check(row,col2) && check(row,col3))
+	{
+		return !this.checkHit(tanks);
+	}
+	return false;
+	
+};
+
+Tank.prototype.moveRight = function()
+{
+	
+	this.dir = RIGHT;
+	this.setPosition();
+	
+	var row = parseInt((this.x + this.speed + this.width)/16);
+	
+	var col1 = parseInt(this.y /16);
+	var col2 = parseInt( (this.y + this.width) /16);
+	var col3 = parseInt( (this.y +(this.width/2) )/16);
+	
+	if(this.x + this.speed + this.width < 416 && check(row,col1) && check(row,col2) && check(row,col3))
+	{
+		return !this.checkHit(tanks);
+	}
+	return false;
+	
+};
+
+
+
+function check(x,y)
+{
+	if(y > 25) 
+	{	
+		y = 25;
+	}
+	else if(y < 0 ) 
+	{
+		y = 0;
+	}
+	
+	if(x < 0 )  
+	{
+		x = 0;
+	}
+	else if(x > 25)  
+	{
+		x = 25;
+	}
+	
+	if( map[y][x] == NON || map[y][x] == GRASS || map[y][x] == ICE ) 
+	{
+		return true;
+	}
+	else  
+	{	
+		return false;
+	}
+}
+
+
+
+Tank.prototype.shot = function()
+{
+	if(!this.isShot)
+	{	
+		this.isShot = true;
+		var bullet = new Bullet(this.x,this.y,this.type,this.dir);
+		bullets.push(bullet);
+	}
+};
+
+
+
+Tank.prototype.checkHit = function()
+{
+	var j;
+	for (j = 0; j < tanks.length ; j++ )
+	{	
+		if (this == tanks[j]) 
+		{
+			continue;
+		}
+		var w = tanks[j].width;
+		
+		var p1a,p2a;
+		
+		
+		if(stopTime	== 0)
+		{
+			p1a = movePoint(this);
+			p2a = movePoint(tanks[j]);
+		}
+		
+		else
+		{
+			p1a = movePoint(this);
+			p2a = movePoint(tanks[j]);
+			
+			if(this.type == 0) 
+			{
+				p2a = new CPoint(tanks[j].x,tanks[j].y);
+			}
+			else 
+			{
+				p1a = new CPoint(this.x,this.y);
+			}
+		}
+		
+		var p1b = new CPoint(p1a.x + this.width, p1a.y + this.width);
+		var p2b = new CPoint(p2a.x + w, p2a.y + w);
+		
+		var isHit = false;
+
+		var minx = p1a.x > p2a.x ? p1a.x : p2a.x;
+		var maxx = p1b.x < p2b.x ? p1b.x : p2b.x;
+		var miny = p1a.y > p2a.y ? p1a.y : p2a.y;
+		var maxy = p1b.y < p2b.y ? p1b.y : p2b.y;
+
+		
+		if (minx <= maxx && miny <= maxy) 
+		{
+			isHit = true;
+		}	
+		else 
+		{
+			isHit = false;
+		}
+		
+		if( isHit )
+		{
+				var scale = 25;
+				
+				switch(this.dir)
+				{
+					case UP:	if ( tanks[j].y  + scale< this.y)
+								{
+									return true;
+								}
+								break;
+					case DOWN:	if ( tanks[j].y  > this.y + scale)
+								{
+									return true;
+								}
+								break;
+					case LEFT:	if ( tanks[j].x + scale < this.x)
+								{
+									return true;
+								}
+								break;
+					case RIGHT:	if ( tanks[j].x  > this.x + scale) 
+								{
+									return true;
+								}
+								break;
+				}
+		}
+	}
+		
+	return false;
+};
+
+function movePoint(tank)
+{
+	switch(tank.dir)
+	{
+		case UP: return new CPoint(tank.x, tank.y - tank.speed);
+		case DOWN: return new CPoint(tank.x, tank.y + tank.speed);
+		case LEFT: return new CPoint(tank.x - tank.speed, tank.y);
+		case RIGHT: return new CPoint(tank.x + tank.speed, tank.y);
+		default:return NULL;
+	}
+}
+
+
+function CPoint(x,y)
+{
+	this.x = x;
+	this.y = y;
+}
+
+
+function updataTanks()
+{
+	var i;
+	for(i = playerNum; i < tanks.length ; i ++)
+	{
+		if(stopTime == 0) tanks[i].moveFree();		
+		tanks[i].updata();
+	}
+	
+	if(stopTime != 0) 
+	{
+		stopTime--;
+	}
+	
+	for(var i = 0; i < playerNum; i ++)
+	{
+		tanks[i].updata();
+	}
+}
+
+function drawTanks()
+{
+	for(var i = 0; i < tanks.length ; i ++)
+	{
+		tanks[i].draw("main");
+	}
+}
+
+
+
+
+
+
